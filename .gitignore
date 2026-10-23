@@ -1,0 +1,10 @@
+# Decagon take-home brief - not part of the repo
+*.pdf
+.DS_Store
+
+# Internal design & prep docs — NOT part of the public repo (README.md is the
+# only doc that ships). These stay local only.
+/docs/
+/bookly-agent/AGENT_DESIGN.md
+/bookly-agent/architecture.mmd
+/bookly-agent/architecture.png

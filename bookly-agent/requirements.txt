@@ -1,0 +1,17 @@
+# Phase 1 (deterministic core) - no cloud, no LLM:
+pytest==8.3.4
+
+# Phase 2 - model connection:
+anthropic==2.1.0
+python-dotenv==1.2.4
+
+# Phase 3 - orchestration graph (we keep Anthropic-native messages, so no
+# langchain-anthropic; langchain-core comes in as a langgraph dependency):
+langgraph==1.2.16
+
+# Phase 5 - real data layer:
+supabase==2.33.0
+
+# Phase 6 - HTTP API:
+fastapi==0.160.0
+uvicorn==0.54.0
