@@ -52,10 +52,23 @@ pytest -v
 Each test name reads as a business rule the agent can never violate — they are
 the guardrails, provable without any LLM.
 
-### Option 2 — chat with the agent (seeded mock data, one key)
+### Option 2 — chat offline with no API key (`--mock`)
 
-Interactive chat needs an **Anthropic API key** to generate replies (as any LLM
-app does). It uses the seeded in-memory store **by default — no Supabase needed.**
+A scripted stand-in plays the model, **calls the real tools**, and runs the
+**real deterministic guards** on the mock data. It handles the documented demo
+scenarios (order status, refund, FAQ, clarifying questions, the identity check,
+and topic switches); it won't improvise on off-script input — for open-ended
+chat use a real key (Option 3) or the hosted demo.
+
+```bash
+python -m app.cli --mock            # no key required
+python -m app.cli --mock --trace    # also prints routing + tool calls
+```
+
+### Option 3 — chat with the real model (seeded mock data, one key)
+
+For genuine open-ended conversation, add an **Anthropic API key** (as any LLM app
+needs). Still uses the seeded in-memory store **by default — no Supabase needed.**
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...     # or put it in bookly-agent/.env

@@ -10,6 +10,8 @@ Type 'quit' (or Ctrl-D) to exit, 'reset' to start a new conversation.
 from __future__ import annotations
 
 import argparse
+import os
+from functools import partial
 
 import anthropic
 
@@ -35,11 +37,26 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Chat with the Bookly support agent.")
     parser.add_argument("--trace", action="store_true",
                         help="show routing decisions, tool calls and raw results")
+    parser.add_argument("--mock", action="store_true",
+                        help="run offline with a scripted fake model (no API key)")
     args = parser.parse_args()
 
-    config.require_api_key()
-    convo = Conversation()
-    print(f"Bookly support ({config.MODEL}). 'quit' to exit, 'reset' for a new chat.\n")
+    if args.mock:
+        from app.mock_model import MockClient
+        new_convo = partial(Conversation, client=MockClient())
+        banner = "MOCK MODE - scripted replies, no API key"
+    else:
+        if not os.getenv("ANTHROPIC_API_KEY"):
+            raise SystemExit(
+                "No ANTHROPIC_API_KEY found.\n"
+                "  - Offline demo (no key):  python -m app.cli --mock\n"
+                "  - Hosted demo:            https://bookly-web-theta.vercel.app")
+        config.require_api_key()
+        new_convo = Conversation
+        banner = config.MODEL
+
+    convo = new_convo()
+    print(f"Bookly support ({banner}). 'quit' to exit, 'reset' for a new chat.\n")
 
     while True:
         try:
@@ -52,7 +69,7 @@ def main() -> None:
         if user.lower() in {"quit", "exit"}:
             break
         if user.lower() == "reset":
-            convo = Conversation()
+            convo = new_convo()
             print("(new conversation)\n")
             continue
 
